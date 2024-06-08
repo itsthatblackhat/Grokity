@@ -1,4 +1,4 @@
-import * as THREE from '../Common/three.js';
+import * as THREE from '/Common/three.js';
 import { Dogenite } from '../Core/Dogenite/Dogenite.js';
 
 const scene = new THREE.Scene();
@@ -28,10 +28,7 @@ const dogenite = new Dogenite();
 scene.add(dogenite.mesh);
 console.log("Dogenite instance created:", dogenite);
 
-dogenite.loadShape('/assets/David_Smith_Einstein_Hat_28.svg');
-console.log("SVGLoader created");
-
-camera.position.z = 5;
+camera.position.z = 300; // Adjusted to fit the shape in the viewport
 
 function animate() {
     requestAnimationFrame(animate);

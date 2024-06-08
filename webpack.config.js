@@ -1,8 +1,9 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-    mode: 'development',
+    mode: 'development', // Set the mode to development or production
     entry: './src/main.mjs',
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -23,9 +24,7 @@ module.exports = {
                     {
                         loader: 'file-loader',
                         options: {
-                            name: '[name].[ext]',
-                            outputPath: 'assets/',
-                            publicPath: 'assets/',
+                            name: '[path][name].[ext]',
                         },
                     },
                 ],
@@ -36,9 +35,11 @@ module.exports = {
         new CopyWebpackPlugin({
             patterns: [
                 { from: 'src/assets', to: 'assets' },
-                { from: 'src/index.html', to: '' }, // Ensure the HTML file is copied
             ],
         }),
+        new HtmlWebpackPlugin({
+            template: 'src/index.html'
+        })
     ],
     resolve: {
         extensions: ['.js', '.mjs']

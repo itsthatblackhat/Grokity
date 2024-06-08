@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as THREE from '/Common/three.js';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 
 class CustomSVGLoader {
@@ -6,30 +6,37 @@ class CustomSVGLoader {
         this.loader = new SVGLoader();
     }
 
-    load(path, onLoad) {
-        this.loader.load(path, (data) => {
-            const svgGroup = new THREE.Group();
-            const paths = data.paths;
+    load(path, onLoad, onError) {
+        this.loader.load(
+            path,
+            (data) => {
+                const paths = data.paths;
+                const group = new THREE.Group();
 
-            paths.forEach((path) => {
-                const shapes = SVGLoader.createShapes(path);
-
-                shapes.forEach((shape) => {
-                    const geometry = new THREE.ShapeGeometry(shape);
+                for (let i = 0; i < paths.length; i++) {
+                    const path = paths[i];
                     const material = new THREE.MeshBasicMaterial({
                         color: path.color,
                         side: THREE.DoubleSide,
                         depthWrite: false
                     });
 
-                    const mesh = new THREE.Mesh(geometry, material);
-                    svgGroup.add(mesh);
-                });
-            });
+                    const shapes = SVGLoader.createShapes(path);
 
-            onLoad(svgGroup);
-        });
+                    for (let j = 0; j < shapes.length; j++) {
+                        const shape = shapes[j];
+                        const geometry = new THREE.ShapeGeometry(shape);
+                        const mesh = new THREE.Mesh(geometry, material);
+                        group.add(mesh);
+                    }
+                }
+
+                onLoad(group);
+            },
+            undefined,
+            onError
+        );
     }
 }
 
-export default CustomSVGLoader;
+export { SVGLoader };
