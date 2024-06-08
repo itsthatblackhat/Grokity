@@ -1,0 +1,17 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+#toolbar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    color: white;
+}
+
+#propertiesPanel {
+    padding: 10px;
+    color: white;
+}
