@@ -1,9 +1,9 @@
 import * as THREE from '/Common/three.js';
-import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
+import { SVGLoader as ThreeSVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 
 class CustomSVGLoader {
     constructor() {
-        this.loader = new SVGLoader();
+        this.loader = new ThreeSVGLoader();
     }
 
     load(path, onLoad, onError) {
@@ -21,7 +21,7 @@ class CustomSVGLoader {
                         depthWrite: false
                     });
 
-                    const shapes = SVGLoader.createShapes(path);
+                    const shapes = ThreeSVGLoader.createShapes(path);
 
                     for (let j = 0; j < shapes.length; j++) {
                         const shape = shapes[j];
@@ -39,4 +39,4 @@ class CustomSVGLoader {
     }
 }
 
-export { SVGLoader };
+export { ThreeSVGLoader as SVGLoader };

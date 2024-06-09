@@ -1,18 +1,17 @@
-import * as THREE from 'three';
-import GraphicsEngine from '../Graphics/GraphicsEngine.js';
-import PhysicsEngine from '../Physics/PhysicsEngine.js';
+import * as THREE from '/Common/three.js';
 
-
-class RenderingEngine {
-    constructor(graphicsEngine, physicsEngine) {
-        this.graphicsEngine = graphicsEngine;
-        this.physicsEngine = physicsEngine;
+class RenderEngine {
+    constructor(scene, camera) {
+        this.scene = scene;
+        this.camera = camera;
+        this.renderer = new THREE.WebGLRenderer();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(this.renderer.domElement);
     }
 
-    render(deltaTime) {
-        this.physicsEngine.update(deltaTime);
-        this.graphicsEngine.render();
+    render() {
+        this.renderer.render(this.scene, this.camera);
     }
 }
 
-export default RenderingEngine;
+export default RenderEngine;

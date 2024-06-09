@@ -1,52 +1,26 @@
-class SceneManager {
+import * as THREE from '/Common/three.js';
+
+export class SceneManager {
     constructor() {
-        this.scenes = {};
-        this.currentScene = null;
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.camera.position.z = 5;
+
+        this.renderer = new THREE.WebGLRenderer();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(this.renderer.domElement);
+
+        this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+
+        // Add other necessary initializations...
     }
 
-    createScene(name) {
-        if (this.scenes[name]) {
-            console.warn(`Scene ${name} already exists.`);
-            return this.scenes[name];
-        }
-
-        const scene = {
-            name,
-            objects: [],
-        };
-        this.scenes[name] = scene;
-        return scene;
+    update() {
+        // Update scene logic, e.g., animations, controls, etc.
+        this.controls.update();
     }
 
-    switchScene(name) {
-        if (!this.scenes[name]) {
-            console.error(`Scene ${name} does not exist.`);
-            return;
-        }
-
-        this.currentScene = this.scenes[name];
-    }
-
-    addObjectToScene(sceneName, object) {
-        if (!this.scenes[sceneName]) {
-            console.error(`Scene ${sceneName} does not exist.`);
-            return;
-        }
-
-        this.scenes[sceneName].objects.push(object);
-    }
-
-    removeObjectFromScene(sceneName, object) {
-        if (!this.scenes[sceneName]) {
-            console.error(`Scene ${sceneName} does not exist.`);
-            return;
-        }
-
-        const index = this.scenes[sceneName].objects.indexOf(object);
-        if (index > -1) {
-            this.scenes[sceneName].objects.splice(index, 1);
-        }
+    render() {
+        this.renderer.render(this.scene, this.camera);
     }
 }
-
-export default SceneManager;

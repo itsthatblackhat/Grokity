@@ -1,46 +1,25 @@
-import * as THREE from 'three';
+import * as THREE from '/Common/three.js';
+import DogeniteManager from '/Core/Dogenite/DogeniteManager.js';
 
 class GraphicsEngine {
-    constructor() {
-        this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.renderer = new THREE.WebGLRenderer({ antialias: true });
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(this.renderer.domElement);
-        this.camera.position.z = 5;
-
-        // Add default lighting
-        this.addDefaultLighting();
+    constructor(scene, camera) {
+        this.scene = scene;
+        this.camera = camera;
+        this.init();
     }
 
-    addDefaultLighting() {
-        const ambientLight = new THREE.AmbientLight(0x404040); // soft white light
+    init() {
+        const ambientLight = new THREE.AmbientLight(0x404040);
         this.scene.add(ambientLight);
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-        directionalLight.position.set(1, 1, 1).normalize();
-        this.scene.add(directionalLight);
-    }
+        const pointLight = new THREE.PointLight(0xffffff);
+        this.camera.add(pointLight);
+        this.scene.add(this.camera);
 
-    addLight(light) {
-        this.scene.add(light);
-    }
+        const gridHelper = new THREE.GridHelper(100, 100);
+        this.scene.add(gridHelper);
 
-    removeLight(light) {
-        this.scene.remove(light);
-    }
-
-    render() {
-        requestAnimationFrame(() => this.render());
-        this.renderer.render(this.scene, this.camera);
-    }
-
-    addObject(object) {
-        this.scene.add(object);
-    }
-
-    removeObject(object) {
-        this.scene.remove(object);
+        new DogeniteManager(this.scene);
     }
 }
 

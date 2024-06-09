@@ -1,40 +1,44 @@
-import * as THREE from '/Common/three.js';
-import { Dogenite } from '../Core/Dogenite/Dogenite.js';
+import * as THREE from '../Common/three.js';
+import { OrbitControls } from '../Common/three.js';
 
-const scene = new THREE.Scene();
-console.log("Scene created:", scene);
+let initialized = false;
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-console.log("Camera created:", camera);
+function init() {
+    if (initialized) return;
+    initialized = true;
 
-const renderer = new THREE.WebGLRenderer();
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-console.log("Renderer created and added to DOM");
+    const scene = new THREE.Scene();
+    console.log('Scene created:', scene);
 
-const controls = new THREE.OrbitControls(camera, renderer.domElement);
-console.log("OrbitControls created:", controls);
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    console.log('Camera created:', camera);
 
-const ambientLight = new THREE.AmbientLight(0x404040);
-scene.add(ambientLight);
-console.log("AmbientLight added to scene");
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    console.log('Renderer created and added to DOM');
 
-const pointLight = new THREE.PointLight(0xffffff, 1, 100);
-pointLight.position.set(50, 50, 50);
-scene.add(pointLight);
-console.log("PointLight added to scene");
+    const controls = new OrbitControls(camera, renderer.domElement);
+    console.log('Controls created:', controls);
 
-const dogenite = new Dogenite();
-scene.add(dogenite.mesh);
-console.log("Dogenite instance created:", dogenite);
+    camera.position.z = 5;
 
-camera.position.z = 300; // Adjusted to fit the shape in the viewport
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
 
-function animate() {
-    requestAnimationFrame(animate);
-    controls.update();
-    renderer.render(scene, camera);
+    function animate() {
+        requestAnimationFrame(animate);
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
+        controls.update();
+        renderer.render(scene, camera);
+    }
+
+    animate();
 }
 
-animate();
-console.log("Animation loop started");
+document.addEventListener('DOMContentLoaded', () => {
+    init();
+});
