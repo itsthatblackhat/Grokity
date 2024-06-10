@@ -1,53 +1,61 @@
 import * as THREE from 'three';
-import InputManager from '../../Core/Input/InputManager.js';
-import World from './World.js';
-import Lighting from './Lighting.js';
-import Sky from './Sky.js';
-import Fog from './Fog.js';
-import Weather from './Weather.js';
 import Controls from './Controls.js';
+import World from './World.js';
+import CoordinatesManager from '/Core/Coordinates/CoordinatesManager.js';
 
-class BasicGame {
-    constructor() {
-        this.scene = new THREE.Scene();
-        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.renderer = new THREE.WebGLRenderer();
-        this.inputManager = null;
-        this.world = null;
-    }
+let camera, scene, renderer, controls, world, coordinatesManager;
 
-    init() {
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(this.renderer.domElement);
+function init() {
+    // Create and insert the coordinates display element
+    const coordinateElement = document.createElement('div');
+    coordinateElement.id = 'coordinates';
+    document.body.appendChild(coordinateElement);
 
-        this.inputManager = new InputManager(this.camera, this.renderer);
-        this.world = new World(this.scene);
-        this.controls = new Controls(this.camera, this.renderer);
+    // Camera
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 5, 5);
 
-        // Initialize modular components
-        Lighting(this.scene);
-        Sky(this.scene);
-        Fog(this.scene);
-        Weather(this.scene);
+    // Scene
+    scene = new THREE.Scene();
 
-        this.camera.position.z = 5;
+    // Renderer
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
 
-        this.inputManager.init();
-        this.controls.init(); // Make sure to call init
-        this.world.init();
+    // Controls
+    controls = new Controls(camera, renderer);
+    controls.init();
 
-        this.animate();
-    }
+    // World
+    world = new World(scene);
+    world.init();
 
-    animate() {
-        requestAnimationFrame(() => this.animate());
+    // Coordinates Manager
+    coordinatesManager = new CoordinatesManager(camera, coordinateElement);
 
-        this.inputManager.update();
-        this.world.update();
-        this.controls.update();
-
-        this.renderer.render(this.scene, this.camera);
-    }
+    // Resize handling
+    window.addEventListener('resize', onWindowResize, false);
 }
 
-export default BasicGame;
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    // Update controls and world
+    controls.update();
+
+    // Update coordinates
+    coordinatesManager.updateCoordinates();
+
+    // Render the scene
+    renderer.render(scene, camera);
+}
+
+init();
+animate();

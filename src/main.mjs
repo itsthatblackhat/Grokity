@@ -1,30 +1,38 @@
-import SceneManager from '../Core/SceneManagement/SceneManager.js';
-import LightingManager from '../Core/Lighting/LightingManager.js';
-import GraphicsEngine from '../Core/Graphics/GraphicsEngine.js';
-import InputManager from '../Core/Input/InputManager.js';
-import World from '../Examples/BasicGame/World.js';
+import * as THREE from 'three';
+import World from '/Examples/BasicGame/World.js';
+import InputManager from '/Core/Input/InputManager.js';
+import Controls from '/Examples/BasicGame/Controls.js';
 
-const sceneManager = new SceneManager();
-const renderer = sceneManager.renderer; // Use the renderer from SceneManager
-const scene = sceneManager.scene; // Use the scene from SceneManager
-const camera = sceneManager.createCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000); // Correctly use createCamera
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-const lightingManager = new LightingManager();
-const graphicsEngine = new GraphicsEngine(scene, camera);
 const world = new World(scene);
+world.init();
 
-const inputManager = new InputManager(camera, renderer); // Initialize InputManager with camera and renderer
-inputManager.init(); // Initialize all input systems
-
-world.init(); // Initialize the world
+const inputManager = new InputManager(camera, renderer);
+inputManager.init();
 
 camera.position.z = 5;
 
+const coordinatesDiv = document.getElementById('coordinates');
+
+function updateCoordinates() {
+    coordinatesDiv.innerText = `Coordinates: (${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)})`;
+}
+
 function animate() {
     requestAnimationFrame(animate);
-    inputManager.update(0.016); // Update with deltaTime
-    world.update(); // Update the world
-    sceneManager.render();
+
+    const deltaTime = 0.01; // This should ideally be calculated
+
+    inputManager.update(deltaTime);
+    world.update();
+
+    updateCoordinates();
+    renderer.render(scene, camera);
 }
 
 animate();

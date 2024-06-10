@@ -1,6 +1,5 @@
-import { OrbitControls } from '../../Core/Input/OrbitControls.js';
+import { OrbitControls } from '/Core/Input/OrbitControls.js';
 import * as THREE from 'three';
-import InputKBM from '../../Core/Input/InputKBM.js'; // Update the path to InputKBM.js
 
 class Controls {
     constructor(camera, renderer, kbm) {
@@ -9,7 +8,7 @@ class Controls {
         this.movementSpeed = 0.1;
         this.rotationSpeed = 0.01;
         this.controls = null;
-        this.kbm = kbm; // Use passed InputKBM instance
+        this.kbm = kbm; // Use the InputKBM instance passed from InputManager
     }
 
     init() {
@@ -41,6 +40,12 @@ class Controls {
         }
         if (this.kbm.isKeyDown('KeyD')) {
             this.camera.position.x += this.movementSpeed * deltaTime;
+        }
+        if (this.kbm.isKeyDown('Space')) {
+            this.camera.position.y += this.movementSpeed * deltaTime;
+        }
+        if (this.kbm.isKeyDown('KeyC')) {
+            this.camera.position.y -= this.movementSpeed * deltaTime;
         }
     }
 }
