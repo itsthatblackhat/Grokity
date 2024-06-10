@@ -1,39 +1,53 @@
-import * as THREE from '../../Common/three.js';
-import { GameEngine } from '../../Core/GameEngine.js';
-import { Entity } from '../../Core/Entity/Entity.js';
-import { ComponentTransform } from '../../Core/Components/ComponentTransform.js';
+import * as THREE from 'three';
+import InputManager from '../../Core/Input/InputManager.js';
+import World from './World.js';
+import Lighting from './Lighting.js';
+import Sky from './Sky.js';
+import Fog from './Fog.js';
+import Weather from './Weather.js';
+import Controls from './Controls.js';
 
-function BasicGame() {
-    const engine = new GameEngine();
-    engine.start();
-
-    const entity = new Entity();
-    const transform = new ComponentTransform();
-    entity.addComponent(transform);
-
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-
-    transform.mesh = cube; // Assign the mesh to the transform component
-    engine.sceneManager.scene.add(cube);
-
-    entity.update = function(deltaTime) {
-        transform.rotation.x += 0.01;
-        transform.rotation.y += 0.01;
-        cube.rotation.x = transform.rotation.x;
-        cube.rotation.y = transform.rotation.y;
-    };
-
-    engine.addEntity(entity);
-
-    function animate() {
-        requestAnimationFrame(animate);
-        engine.update();
-        engine.render();
+class BasicGame {
+    constructor() {
+        this.scene = new THREE.Scene();
+        this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        this.renderer = new THREE.WebGLRenderer();
+        this.inputManager = null;
+        this.world = null;
     }
 
-    animate();
+    init() {
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(this.renderer.domElement);
+
+        this.inputManager = new InputManager(this.camera, this.renderer);
+        this.world = new World(this.scene);
+        this.controls = new Controls(this.camera, this.renderer);
+
+        // Initialize modular components
+        Lighting(this.scene);
+        Sky(this.scene);
+        Fog(this.scene);
+        Weather(this.scene);
+
+        this.camera.position.z = 5;
+
+        this.inputManager.init();
+        this.controls.init(); // Make sure to call init
+        this.world.init();
+
+        this.animate();
+    }
+
+    animate() {
+        requestAnimationFrame(() => this.animate());
+
+        this.inputManager.update();
+        this.world.update();
+        this.controls.update();
+
+        this.renderer.render(this.scene, this.camera);
+    }
 }
 
 export default BasicGame;

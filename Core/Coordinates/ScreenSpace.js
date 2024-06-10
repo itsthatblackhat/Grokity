@@ -1,4 +1,4 @@
-import * as THREE from '/Common/three.js';
+import * as THREE from 'three';
 
 class ScreenSpace {
     constructor(camera, renderer) {

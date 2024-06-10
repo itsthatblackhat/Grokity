@@ -1,5 +1,5 @@
-import * as THREE from '/Common/three.js';
-import DogeniteManager from '/Core/Dogenite/DogeniteManager.js';
+import * as THREE from 'three';
+import DogeniteManager from '../Dogenite/DogeniteManager.js';
 
 class GraphicsEngine {
     constructor(scene, camera) {

@@ -1,20 +1,23 @@
-export class EntityManager {
+import Entity from './Entity.js';
+
+class EntityManager {
     constructor() {
         this.entities = [];
     }
 
-    addEntity(entity) {
+    createEntity() {
+        const entity = new Entity();
         this.entities.push(entity);
-    }
-
-    removeEntity(entity) {
-        const index = this.entities.indexOf(entity);
-        if (index > -1) {
-            this.entities.splice(index, 1);
-        }
+        return entity;
     }
 
     update(deltaTime) {
-        this.entities.forEach(entity => entity.update(deltaTime));
+        for (const entity of this.entities) {
+            for (const component of Object.values(entity.components)) {
+                component.update(deltaTime);
+            }
+        }
     }
 }
+
+export default new EntityManager();

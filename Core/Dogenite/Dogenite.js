@@ -1,25 +1,25 @@
-import * as THREE from '/Common/three.js';
+import * as THREE from 'three';
 
-export default class Dogenite {
-    constructor() {
-        const shape = new THREE.Shape();
-        // Define the Einstein hat shape or any other desired shape here
-        shape.moveTo(0, 0);
-        shape.lineTo(1, 0);
-        shape.lineTo(0.5, Math.sqrt(3)/2);
-        shape.lineTo(0, 0);
-
-        const extrudeSettings = {
-            depth: 0.2,
-            bevelEnabled: false,
-        };
-
-        const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-        const material = new THREE.MeshBasicMaterial({ color: 0x0000ff, side: THREE.DoubleSide });
-        this.mesh = new THREE.Mesh(geometry, material);
+class Dogenite {
+    constructor(scale) {
+        this.mesh = this.createQuarterPixelShape(scale);
     }
 
-    getMesh() {
-        return this.mesh;
+    createQuarterPixelShape(scale) {
+        const geometry = new THREE.BufferGeometry();
+        const vertices = new Float32Array([
+            -scale / 2, -scale / 2, 0, // Vertex 1
+            scale / 2, -scale / 2, 0, // Vertex 2
+            0, 0, 0  // Vertex 3
+        ]);
+        geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+        const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
+        return new THREE.Mesh(geometry, material);
+    }
+
+    update(deltaTime) {
+        // Update logic if needed
     }
 }
+
+export default Dogenite;

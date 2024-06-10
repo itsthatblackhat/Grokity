@@ -1,17 +1,19 @@
-import * as THREE from '/Common/three.js';
+// Core/Rendering/RenderingEngine.js
+import * as THREE from 'three';
 
-class RenderEngine {
-    constructor(scene, camera) {
-        this.scene = scene;
-        this.camera = camera;
+class RenderingEngine {
+    constructor() {
         this.renderer = new THREE.WebGLRenderer();
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this.renderer.domElement);
     }
 
-    render() {
-        this.renderer.render(this.scene, this.camera);
+    resize(width, height) {
+        this.renderer.setSize(width, height);
+    }
+
+    render(scene, camera) {
+        this.renderer.render(scene, camera);
     }
 }
 
-export default RenderEngine;
+export default RenderingEngine;

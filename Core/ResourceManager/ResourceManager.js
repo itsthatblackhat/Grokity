@@ -1,17 +1,18 @@
-export class ResourceManager {
+// Core/ResourceManager/ResourceManager.js
+class ResourceManager {
     constructor() {
-        this.resources = {};
+        this.assets = {};
     }
 
-    loadResource(name, path, type) {
-        // Load resource logic (e.g., textures, models)
+    loadTexture(name, url) {
+        const image = new Image();
+        image.src = url;
+        this.assets[name] = image;
     }
 
-    getResource(name) {
-        return this.resources[name];
-    }
-
-    update() {
-        // Update resource loading if needed
+    getTexture(name) {
+        return this.assets[name];
     }
 }
+
+export default new ResourceManager();

@@ -1,24 +1,24 @@
-export class Entity {
+// Core/Entity/Entity.js
+class Entity {
     constructor() {
-        this.components = [];
+        this.components = {};
+        this.position = { x: 0, y: 0, z: 0 };
+        this.rotation = { x: 0, y: 0, z: 0 };
+        this.scale = { x: 1, y: 1, z: 1 };
     }
 
-    addComponent(component) {
-        this.components.push(component);
+    addComponent(name, component) {
+        component.entity = this;
+        this.components[name] = component;
     }
 
-    removeComponent(component) {
-        const index = this.components.indexOf(component);
-        if (index > -1) {
-            this.components.splice(index, 1);
-        }
+    getComponent(name) {
+        return this.components[name];
     }
 
-    getComponent(componentClass) {
-        return this.components.find(c => c instanceof componentClass);
-    }
-
-    update(deltaTime) {
-        this.components.forEach(component => component.update(deltaTime));
+    removeComponent(name) {
+        delete this.components[name];
     }
 }
+
+export default Entity;

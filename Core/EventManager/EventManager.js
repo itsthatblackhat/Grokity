@@ -1,20 +1,32 @@
+// Core/EventManager/EventManager.js
 class EventManager {
     constructor() {
-        this.events = {};
+        this.listeners = {};
     }
 
-    on(event, listener) {
-        if (!this.events[event]) {
-            this.events[event] = [];
+    addEventListener(type, callback) {
+        if (!this.listeners[type]) {
+            this.listeners[type] = [];
         }
-        this.events[event].push(listener);
+        this.listeners[type].push(callback);
     }
 
-    emit(event, ...args) {
-        if (this.events[event]) {
-            this.events[event].forEach(listener => listener(...args));
+    removeEventListener(type, callback) {
+        if (!this.listeners[type]) return;
+
+        const index = this.listeners[type].indexOf(callback);
+        if (index > -1) {
+            this.listeners[type].splice(index, 1);
+        }
+    }
+
+    dispatchEvent(type, event) {
+        if (!this.listeners[type]) return;
+
+        for (const listener of this.listeners[type]) {
+            listener(event);
         }
     }
 }
 
-export default EventManager;
+export default new EventManager();

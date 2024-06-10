@@ -1,4 +1,4 @@
-import * as THREE from '/Common/three.js';
+import * as THREE from 'three';
 
 export function createEinsteinHatShape() {
     // Define your geometry and material here

@@ -1,22 +1,25 @@
-export class UIManager {
+// Core/UI/UIManager.js
+class UIManager {
     constructor() {
-        this.uiElements = [];
+        this.elements = {};
     }
 
-    addUIElement(element) {
-        this.uiElements.push(element);
+    addElement(name, element) {
+        this.elements[name] = element;
         document.body.appendChild(element);
     }
 
-    removeUIElement(element) {
-        const index = this.uiElements.indexOf(element);
-        if (index > -1) {
-            this.uiElements.splice(index, 1);
-            document.body.removeChild(element);
-        }
+    getElement(name) {
+        return this.elements[name];
     }
 
-    update() {
-        // Update UI elements if needed
+    removeElement(name) {
+        const element = this.elements[name];
+        if (element) {
+            document.body.removeChild(element);
+            delete this.elements[name];
+        }
     }
 }
+
+export default new UIManager();

@@ -1,32 +1,51 @@
-export class ComponentSystem {
+// Core/Components/Component.js
+class Component {
     constructor() {
-        this.components = new Map();
-    }
-
-    addComponent(entity, component) {
-        if (!this.components.has(entity)) {
-            this.components.set(entity, []);
-        }
-        this.components.get(entity).push(component);
-    }
-
-    removeComponent(entity, component) {
-        if (this.components.has(entity)) {
-            const entityComponents = this.components.get(entity);
-            const index = entityComponents.indexOf(component);
-            if (index > -1) {
-                entityComponents.splice(index, 1);
-            }
-        }
-    }
-
-    getComponents(entity) {
-        return this.components.get(entity) || [];
+        this.entity = null;
     }
 
     update(deltaTime) {
-        this.components.forEach((components, entity) => {
-            components.forEach(component => component.update(deltaTime));
-        });
+        // Override in derived components
     }
 }
+
+export default Component;
+
+// Core/Components/RenderableComponent.js
+import Component from './Component.js';
+
+class RenderableComponent extends Component {
+    constructor(mesh) {
+        super();
+        this.mesh = mesh;
+    }
+
+    update(deltaTime) {
+        // Update mesh if needed
+    }
+}
+
+export default RenderableComponent;
+
+// Core/Components/PhysicsComponent.js
+import Component from './Component.js';
+import PhysicsManager from '../Physics/PhysicsManager.js';
+
+class PhysicsComponent extends Component {
+    constructor(body) {
+        super();
+        this.body = body;
+        PhysicsManager.addBody(this.body);
+    }
+
+    update(deltaTime) {
+        // Sync entity position with physics body
+        if (this.entity) {
+            const { position, quaternion } = this.body;
+            this.entity.position.copy(position);
+            this.entity.quaternion.copy(quaternion);
+        }
+    }
+}
+
+export default PhysicsComponent;

@@ -1,4 +1,3 @@
-// webpack.config.js
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -6,27 +5,31 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
     entry: './src/main.mjs',
     output: {
-        filename: 'bundle.js',
         path: path.resolve(__dirname, 'dist'),
+        filename: 'bundle.js',
+    },
+    mode: 'development',
+    externals: {
+        three: 'THREE',
+    },
+    resolve: {
+        alias: {
+            'three/examples': path.resolve(__dirname, 'node_modules/three/examples'),
+        },
     },
     module: {
         rules: [
             {
-                test: /\.mjs$/,
-                include: /src/,
-                type: 'javascript/auto',
-                use: [],
-            },
-            {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader'],
+                test: /\.m?js$/,
+                exclude: /(node_modules|bower_components)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/preset-env'],
+                    },
+                },
             },
         ],
-    },
-    resolve: {
-        alias: {
-            'three': path.resolve(__dirname, 'node_modules/three'),
-        },
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -35,6 +38,7 @@ module.exports = {
         new CopyWebpackPlugin({
             patterns: [
                 { from: 'src/assets', to: 'assets' },
+                { from: 'src/styles.css', to: '' },
             ],
         }),
     ],
@@ -42,8 +46,7 @@ module.exports = {
         static: {
             directory: path.join(__dirname, 'dist'),
         },
-        compress: true,
-        port: 8080,
+        hot: true,
+        open: true,
     },
-    mode: 'development',
 };

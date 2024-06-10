@@ -1,13 +1,36 @@
-import { SceneManager } from './SceneManagement/SceneManager.js';
-import { InputManager } from './Input/InputManager.js';
-import { EntityManager } from './Entity/EntityManager.js';
-import * as THREE from '../Common/three.js'; // Ensure THREE is imported
+import * as THREE from '/Common/three.js';
+import SceneManager from './SceneManagement/SceneManager.js';
+import InputManager from './Input/InputManager.js';
+import EntityManager from './Entity/EntityManager.js';
+import GraphicsEngine from './Graphics/GraphicsEngine.js';
 
 export class GameEngine {
     constructor() {
+        console.log('Initializing Game Engine');
+
+        this.renderer = new THREE.WebGLRenderer();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(this.renderer.domElement);
+
         this.sceneManager = new SceneManager();
-        this.inputManager = new InputManager();
+        this.inputManager = new InputManager(this.sceneManager.camera, this.renderer);
         this.entityManager = new EntityManager();
+        this.graphicsEngine = new GraphicsEngine(this.sceneManager.scene, this.sceneManager.camera);
+
+        this.controls = new THREE.OrbitControls(this.sceneManager.camera, this.renderer.domElement);
+
+        console.log('Game Engine Initialized');
+    }
+
+    initialize() {
+        console.log('Initializing Game Engine Components');
+        // Add any additional initialization logic here
+    }
+
+    addEntity(entity) {
+        console.log('Adding Entity to Scene');
+        this.sceneManager.scene.add(entity.object3D);
+        this.entityManager.addEntity(entity);
     }
 
     start() {
@@ -20,23 +43,15 @@ export class GameEngine {
     }
 
     update() {
-        this.inputManager.update();
-        this.entityManager.update();
-        this.sceneManager.update();
+        const deltaTime = 0.016; // Assuming 60fps for simplicity
+        this.inputManager.update(deltaTime);
+        this.entityManager.update(deltaTime);
+        this.sceneManager.update(deltaTime);
     }
 
     render() {
-        this.sceneManager.render();
-    }
-
-    addEntity(entity) {
-        this.entityManager.addEntity(entity);
-        if (entity.components) {
-            entity.components.forEach(component => {
-                if (component.mesh && component.mesh instanceof THREE.Object3D) {
-                    this.sceneManager.scene.add(component.mesh);
-                }
-            });
-        }
+        this.renderer.render(this.sceneManager.scene, this.sceneManager.camera);
     }
 }
+
+export default GameEngine;

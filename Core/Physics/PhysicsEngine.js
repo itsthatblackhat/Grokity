@@ -1,11 +1,13 @@
+// Core/Physics/PhysicsEngine.js
 import * as CANNON from 'cannon';
 
-export class PhysicsEngine {
+export default class PhysicsEngine {
     constructor() {
         this.world = new CANNON.World();
         this.world.gravity.set(0, -9.82, 0); // Earth gravity
         this.world.broadphase = new CANNON.NaiveBroadphase();
         this.world.solver.iterations = 10;
+
         this.bodies = [];
     }
 
