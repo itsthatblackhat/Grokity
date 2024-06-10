@@ -1,17 +1,16 @@
-import * as THREE from '/Common/three.js';
 import { SceneManager } from './SceneManagement/SceneManager.js';
 import { InputManager } from './Input/InputManager.js';
-// Add other necessary imports...
+import { EntityManager } from './Entity/EntityManager.js';
+import * as THREE from '../Common/three.js'; // Ensure THREE is imported
 
 export class GameEngine {
     constructor() {
         this.sceneManager = new SceneManager();
         this.inputManager = new InputManager();
-        // Initialize other managers and core systems...
+        this.entityManager = new EntityManager();
     }
 
     start() {
-        // Set up your game loop here...
         const animate = () => {
             requestAnimationFrame(animate);
             this.update();
@@ -21,18 +20,23 @@ export class GameEngine {
     }
 
     update() {
-        // Update logic for input, physics, etc.
         this.inputManager.update();
+        this.entityManager.update();
         this.sceneManager.update();
-        // Update other systems...
     }
 
     render() {
-        // Render logic
         this.sceneManager.render();
     }
-}
 
-// Usage:
-// const gameEngine = new GameEngine();
-// gameEngine.start();
+    addEntity(entity) {
+        this.entityManager.addEntity(entity);
+        if (entity.components) {
+            entity.components.forEach(component => {
+                if (component.mesh && component.mesh instanceof THREE.Object3D) {
+                    this.sceneManager.scene.add(component.mesh);
+                }
+            });
+        }
+    }
+}

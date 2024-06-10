@@ -1,44 +1,5 @@
-import * as THREE from '../Common/three.js';
-import { OrbitControls } from '../Common/three.js';
-
-let initialized = false;
-
-function init() {
-    if (initialized) return;
-    initialized = true;
-
-    const scene = new THREE.Scene();
-    console.log('Scene created:', scene);
-
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    console.log('Camera created:', camera);
-
-    const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-    console.log('Renderer created and added to DOM');
-
-    const controls = new OrbitControls(camera, renderer.domElement);
-    console.log('Controls created:', controls);
-
-    camera.position.z = 5;
-
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
-    function animate() {
-        requestAnimationFrame(animate);
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
-        controls.update();
-        renderer.render(scene, camera);
-    }
-
-    animate();
-}
+import BasicGame from '../Examples/BasicGame/BasicGame.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    init();
+    BasicGame();
 });

@@ -1,20 +1,17 @@
-class ResourceManager {
+export class ResourceManager {
     constructor() {
         this.resources = {};
     }
 
-    loadResource(name, url, type) {
-        if (type === 'image') {
-            const img = new Image();
-            img.src = url;
-            this.resources[name] = img;
-        }
-        // Additional resource types can be handled here (e.g., models, audio)
+    loadResource(name, path, type) {
+        // Load resource logic (e.g., textures, models)
     }
 
     getResource(name) {
         return this.resources[name];
     }
-}
 
-export default ResourceManager;
+    update() {
+        // Update resource loading if needed
+    }
+}

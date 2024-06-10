@@ -1,4 +1,5 @@
-import * as THREE from '/Common/three.js';
+import * as THREE from '../../Common/three.js';
+import { OrbitControls } from '../../Common/three.js';
 
 export class SceneManager {
     constructor() {
@@ -10,13 +11,18 @@ export class SceneManager {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         document.body.appendChild(this.renderer.domElement);
 
-        this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
 
-        // Add other necessary initializations...
+        window.addEventListener('resize', this.onWindowResize.bind(this), false);
+    }
+
+    onWindowResize() {
+        this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.updateProjectionMatrix();
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
     update() {
-        // Update scene logic, e.g., animations, controls, etc.
         this.controls.update();
     }
 

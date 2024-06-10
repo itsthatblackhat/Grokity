@@ -1,12 +1,11 @@
 import * as CANNON from 'cannon';
 
-class PhysicsEngine {
+export class PhysicsEngine {
     constructor() {
         this.world = new CANNON.World();
         this.world.gravity.set(0, -9.82, 0); // Earth gravity
         this.world.broadphase = new CANNON.NaiveBroadphase();
         this.world.solver.iterations = 10;
-
         this.bodies = [];
     }
 
@@ -35,5 +34,3 @@ class PhysicsEngine {
         return new CANNON.ContactMaterial(materialA, materialB, options);
     }
 }
-
-export default PhysicsEngine;

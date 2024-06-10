@@ -1,29 +1,39 @@
-import * as THREE from '/Common/three.js';
-import { OrbitControls } from '/Libraries/OrbitControls.min.js'; // Ensure correct path
+import * as THREE from '../../Common/three.js';
+import { GameEngine } from '../../Core/GameEngine.js';
+import { Entity } from '../../Core/Entity/Entity.js';
+import { ComponentTransform } from '../../Core/Components/ComponentTransform.js';
 
 function BasicGame() {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-    const controls = new OrbitControls(camera, renderer.domElement);
+    const engine = new GameEngine();
+    engine.start();
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    const entity = new Entity();
+    const transform = new ComponentTransform();
+    entity.addComponent(transform);
 
     const geometry = new THREE.BoxGeometry();
     const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
     const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
 
-    camera.position.z = 5;
+    transform.mesh = cube; // Assign the mesh to the transform component
+    engine.sceneManager.scene.add(cube);
+
+    entity.update = function(deltaTime) {
+        transform.rotation.x += 0.01;
+        transform.rotation.y += 0.01;
+        cube.rotation.x = transform.rotation.x;
+        cube.rotation.y = transform.rotation.y;
+    };
+
+    engine.addEntity(entity);
 
     function animate() {
         requestAnimationFrame(animate);
-        controls.update();
-        renderer.render(scene, camera);
+        engine.update();
+        engine.render();
     }
 
     animate();
 }
 
-BasicGame();
+export default BasicGame;

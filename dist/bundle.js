@@ -20,13 +20,63 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 
 /***/ }),
 
+/***/ "./Core/GameEngine.js":
+/*!****************************!*\
+  !*** ./Core/GameEngine.js ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   GameEngine: () => (/* binding */ GameEngine)\n/* harmony export */ });\n/* harmony import */ var _Common_three_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Common/three.js */ \"./Common/three.js\");\n/* harmony import */ var _SceneManagement_SceneManager_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./SceneManagement/SceneManager.js */ \"./Core/SceneManagement/SceneManager.js\");\n/* harmony import */ var _Input_InputManager_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Input/InputManager.js */ \"./Core/Input/InputManager.js\");\n/* harmony import */ var _UI_UIManager_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./UI/UIManager.js */ \"./Core/UI/UIManager.js\");\n\r\n\r\n\r\n\r\n\r\nclass GameEngine {\r\n    constructor() {\r\n        this.sceneManager = new _SceneManagement_SceneManager_js__WEBPACK_IMPORTED_MODULE_1__.SceneManager();\r\n        this.inputManager = new _Input_InputManager_js__WEBPACK_IMPORTED_MODULE_2__.InputManager();\r\n        this.uiManager = new _UI_UIManager_js__WEBPACK_IMPORTED_MODULE_3__[\"default\"]();\r\n        this.entities = []; // Add this line to keep track of entities\r\n    }\r\n\r\n    start() {\r\n        const animate = () => {\r\n            requestAnimationFrame(animate);\r\n            this.update();\r\n            this.render();\r\n        };\r\n        animate();\r\n    }\r\n\r\n    update() {\r\n        this.inputManager.update();\r\n        this.sceneManager.update();\r\n        this.uiManager.update();\r\n        this.entities.forEach(entity => entity.update()); // Update entities\r\n    }\r\n\r\n    render() {\r\n        this.sceneManager.render();\r\n        this.uiManager.render();\r\n    }\r\n\r\n    addEntity(entity) {\r\n        this.entities.push(entity);\r\n        this.sceneManager.scene.add(entity.mesh); // Assuming each entity has a 'mesh' property\r\n    }\r\n}\r\n\r\n// Usage:\r\n// const gameEngine = new GameEngine();\r\n// gameEngine.start();\r\n\n\n//# sourceURL=webpack://grokity/./Core/GameEngine.js?");
+
+/***/ }),
+
+/***/ "./Core/Input/InputManager.js":
+/*!************************************!*\
+  !*** ./Core/Input/InputManager.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   InputManager: () => (/* binding */ InputManager)\n/* harmony export */ });\nclass InputManager {\r\n    constructor() {\r\n        this.keys = {};\r\n        this.mouse = { x: 0, y: 0, clicked: false };\r\n\r\n        window.addEventListener('keydown', (e) => this.onKeyDown(e));\r\n        window.addEventListener('keyup', (e) => this.onKeyUp(e));\r\n        window.addEventListener('mousemove', (e) => this.onMouseMove(e));\r\n        window.addEventListener('mousedown', (e) => this.onMouseDown(e));\r\n        window.addEventListener('mouseup', (e) => this.onMouseUp(e));\r\n    }\r\n\r\n    onKeyDown(event) {\r\n        this.keys[event.code] = true;\r\n    }\r\n\r\n    onKeyUp(event) {\r\n        this.keys[event.code] = false;\r\n    }\r\n\r\n    onMouseMove(event) {\r\n        this.mouse.x = event.clientX;\r\n        this.mouse.y = event.clientY;\r\n    }\r\n\r\n    onMouseDown(event) {\r\n        this.mouse.clicked = true;\r\n    }\r\n\r\n    onMouseUp(event) {\r\n        this.mouse.clicked = false;\r\n    }\r\n\r\n    update() {\r\n        // Handle input states\r\n    }\r\n\r\n    isKeyPressed(key) {\r\n        return !!this.keys[key];\r\n    }\r\n}\r\n\n\n//# sourceURL=webpack://grokity/./Core/Input/InputManager.js?");
+
+/***/ }),
+
+/***/ "./Core/SceneManagement/SceneManager.js":
+/*!**********************************************!*\
+  !*** ./Core/SceneManagement/SceneManager.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   SceneManager: () => (/* binding */ SceneManager)\n/* harmony export */ });\n/* harmony import */ var _Common_three_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Common/three.js */ \"./Common/three.js\");\n/* harmony import */ var three_examples_jsm_controls_OrbitControls_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! three/examples/jsm/controls/OrbitControls.js */ \"./node_modules/three/examples/jsm/controls/OrbitControls.js\");\n\r\n\r\n\r\nclass SceneManager {\r\n    constructor() {\r\n        this.scene = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.Scene();\r\n        this.camera = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);\r\n        this.camera.position.z = 5;\r\n\r\n        this.renderer = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.WebGLRenderer();\r\n        this.renderer.setSize(window.innerWidth, window.innerHeight);\r\n        document.body.appendChild(this.renderer.domElement);\r\n\r\n        this.controls = new three_examples_jsm_controls_OrbitControls_js__WEBPACK_IMPORTED_MODULE_1__.OrbitControls(this.camera, this.renderer.domElement);\r\n\r\n        window.addEventListener('resize', this.onWindowResize.bind(this));\r\n    }\r\n\r\n    onWindowResize() {\r\n        this.camera.aspect = window.innerWidth / window.innerHeight;\r\n        this.camera.updateProjectionMatrix();\r\n        this.renderer.setSize(window.innerWidth, window.innerHeight);\r\n    }\r\n\r\n    update() {\r\n        this.controls.update();\r\n    }\r\n\r\n    render() {\r\n        this.renderer.render(this.scene, this.camera);\r\n    }\r\n}\r\n\n\n//# sourceURL=webpack://grokity/./Core/SceneManagement/SceneManager.js?");
+
+/***/ }),
+
+/***/ "./Core/UI/UIManager.js":
+/*!******************************!*\
+  !*** ./Core/UI/UIManager.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\nclass UIManager {\r\n    constructor() {\r\n        this.uiElements = [];\r\n    }\r\n\r\n    addElement(element) {\r\n        this.uiElements.push(element);\r\n    }\r\n\r\n    removeElement(element) {\r\n        const index = this.uiElements.indexOf(element);\r\n        if (index > -1) {\r\n            this.uiElements.splice(index, 1);\r\n        }\r\n    }\r\n\r\n    update() {\r\n        this.uiElements.forEach(element => element.update());\r\n    }\r\n\r\n    render() {\r\n        this.uiElements.forEach(element => element.render());\r\n    }\r\n}\r\n\r\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (UIManager);\r\n\n\n//# sourceURL=webpack://grokity/./Core/UI/UIManager.js?");
+
+/***/ }),
+
+/***/ "./Examples/BasicGame/BasicGame.js":
+/*!*****************************************!*\
+  !*** ./Examples/BasicGame/BasicGame.js ***!
+  \*****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _Common_three_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Common/three.js */ \"./Common/three.js\");\n/* harmony import */ var _Core_GameEngine_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../Core/GameEngine.js */ \"./Core/GameEngine.js\");\n // Correct the path\r\n // Correct the path\r\n // Correct the path\r\n\r\nfunction BasicGame() {\r\n    const engine = new _Core_GameEngine_js__WEBPACK_IMPORTED_MODULE_1__.GameEngine();\r\n    engine.start();\r\n\r\n    const geometry = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.BoxGeometry();\r\n    const material = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.MeshBasicMaterial({ color: 0x00ff00 });\r\n    const cube = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.Mesh(geometry, material);\r\n\r\n    const entity = {\r\n        mesh: cube,\r\n        update: function() {\r\n            this.mesh.rotation.x += 0.01;\r\n            this.mesh.rotation.y += 0.01;\r\n        }\r\n    };\r\n\r\n    engine.addEntity(entity);\r\n\r\n    const controls = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.OrbitControls(engine.sceneManager.camera, engine.sceneManager.renderer.domElement);\r\n\r\n    function animate() {\r\n        requestAnimationFrame(animate);\r\n        controls.update();\r\n        engine.render();\r\n    }\r\n\r\n    animate();\r\n}\r\n\r\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (BasicGame); // Ensure BasicGame is exported\r\n\n\n//# sourceURL=webpack://grokity/./Examples/BasicGame/BasicGame.js?");
+
+/***/ }),
+
 /***/ "./src/main.mjs":
 /*!**********************!*\
   !*** ./src/main.mjs ***!
   \**********************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _Common_three_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Common/three.js */ \"./Common/three.js\");\n// src/main.mjs\r\n\r\n\r\n\r\nlet initialized = false;\r\n\r\nfunction init() {\r\n    if (initialized) return; // Prevent multiple initializations\r\n    initialized = true;\r\n\r\n    const scene = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.Scene();\r\n    console.log('Scene created:', scene);\r\n\r\n    const camera = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);\r\n    console.log('Camera created:', camera);\r\n\r\n    const renderer = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.WebGLRenderer();\r\n    renderer.setSize(window.innerWidth, window.innerHeight);\r\n    document.body.appendChild(renderer.domElement);\r\n    console.log('Renderer created and added to DOM');\r\n\r\n    const controls = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.OrbitControls(camera, renderer.domElement);\r\n    console.log('Controls created:', controls);\r\n\r\n    camera.position.z = 5;\r\n\r\n    const geometry = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.BoxGeometry();\r\n    const material = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.MeshBasicMaterial({ color: 0x00ff00 });\r\n    const cube = new _Common_three_js__WEBPACK_IMPORTED_MODULE_0__.Mesh(geometry, material);\r\n    scene.add(cube);\r\n\r\n    function animate() {\r\n        requestAnimationFrame(animate);\r\n        cube.rotation.x += 0.01;\r\n        cube.rotation.y += 0.01;\r\n        controls.update();\r\n        renderer.render(scene, camera);\r\n    }\r\n\r\n    animate();\r\n}\r\n\r\ndocument.addEventListener('DOMContentLoaded', () => {\r\n    init();\r\n});\r\n\n\n//# sourceURL=webpack://grokity/./src/main.mjs?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _Examples_BasicGame_BasicGame_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Examples/BasicGame/BasicGame.js */ \"./Examples/BasicGame/BasicGame.js\");\n // Ensure the path is correct\r\n\r\ndocument.addEventListener('DOMContentLoaded', () => {\r\n    (0,_Examples_BasicGame_BasicGame_js__WEBPACK_IMPORTED_MODULE_0__[\"default\"])();\r\n});\r\n\n\n//# sourceURL=webpack://grokity/./src/main.mjs?");
 
 /***/ }),
 

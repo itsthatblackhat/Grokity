@@ -1,16 +1,22 @@
-class UIManager {
+export class UIManager {
     constructor() {
-        this.debugInfo = document.createElement('div');
-        this.debugInfo.style.position = 'absolute';
-        this.debugInfo.style.top = '10px';
-        this.debugInfo.style.left = '10px';
-        this.debugInfo.style.color = 'white';
-        document.body.appendChild(this.debugInfo);
+        this.uiElements = [];
     }
 
-    updateDebugInfo(info) {
-        this.debugInfo.innerHTML = info;
+    addUIElement(element) {
+        this.uiElements.push(element);
+        document.body.appendChild(element);
+    }
+
+    removeUIElement(element) {
+        const index = this.uiElements.indexOf(element);
+        if (index > -1) {
+            this.uiElements.splice(index, 1);
+            document.body.removeChild(element);
+        }
+    }
+
+    update() {
+        // Update UI elements if needed
     }
 }
-
-export default UIManager;
