@@ -1,20 +1,16 @@
 import * as THREE from 'three';
 
 class Dogenite {
-    constructor(scale) {
-        this.mesh = this.createQuarterPixelShape(scale);
-    }
-
-    createQuarterPixelShape(scale) {
+    constructor(v1, v2, v3) {
         const geometry = new THREE.BufferGeometry();
         const vertices = new Float32Array([
-            -scale / 2, -scale / 2, 0, // Vertex 1
-            scale / 2, -scale / 2, 0, // Vertex 2
-            0, 0, 0  // Vertex 3
+            v1.x, v1.y, v1.z,
+            v2.x, v2.y, v2.z,
+            v3.x, v3.y, v3.z
         ]);
         geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
         const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
-        return new THREE.Mesh(geometry, material);
+        this.mesh = new THREE.Mesh(geometry, material);
     }
 
     update(deltaTime) {

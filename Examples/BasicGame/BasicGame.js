@@ -1,61 +1,42 @@
 import * as THREE from 'three';
-import Controls from './Controls.js';
-import World from './World.js';
-import CoordinatesManager from '/Core/Coordinates/CoordinatesManager.js';
+import Dogenite from '../../Core/Dogenite/Dogenite.js';
+import CreateQuarterPixelShape from '../../Core/Dogenite/CreateQuarterPixelShape.js';
 
-let camera, scene, renderer, controls, world, coordinatesManager;
+let scene, camera, renderer;
+let dogenite, quarterPixelShape;
 
 function init() {
-    // Create and insert the coordinates display element
-    const coordinateElement = document.createElement('div');
-    coordinateElement.id = 'coordinates';
-    document.body.appendChild(coordinateElement);
-
-    // Camera
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 5, 5);
-
-    // Scene
     scene = new THREE.Scene();
-
-    // Renderer
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // Controls
-    controls = new Controls(camera, renderer);
-    controls.init();
+    camera.position.z = 5;
 
-    // World
-    world = new World(scene);
-    world.init();
+    // Create and add Dogenite to the scene
+    dogenite = new Dogenite(1);
+    scene.add(dogenite.mesh);
 
-    // Coordinates Manager
-    coordinatesManager = new CoordinatesManager(camera, coordinateElement);
+    // Create and add QuarterPixelShape to the scene
+    quarterPixelShape = CreateQuarterPixelShape(1);
+    scene.add(quarterPixelShape);
 
-    // Resize handling
-    window.addEventListener('resize', onWindowResize, false);
-}
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    animate();
 }
 
 function animate() {
     requestAnimationFrame(animate);
 
-    // Update controls and world
-    controls.update();
+    // Rotate the Dogenite
+    dogenite.mesh.rotation.x += 0.01;
+    dogenite.mesh.rotation.y += 0.01;
 
-    // Update coordinates
-    coordinatesManager.updateCoordinates();
+    // Rotate the QuarterPixelShape
+    quarterPixelShape.rotation.x += 0.01;
+    quarterPixelShape.rotation.y += 0.01;
 
-    // Render the scene
     renderer.render(scene, camera);
 }
 
 init();
-animate();

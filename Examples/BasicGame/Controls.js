@@ -5,7 +5,7 @@ class Controls {
     constructor(camera, renderer, kbm) {
         this.camera = camera;
         this.renderer = renderer;
-        this.movementSpeed = 0.1;
+        this.movementSpeed = 0.5; // Increased movement speed
         this.rotationSpeed = 0.01;
         this.controls = null;
         this.kbm = kbm; // Use the InputKBM instance passed from InputManager
@@ -29,17 +29,24 @@ class Controls {
     }
 
     handleKeyboardInput(deltaTime) {
+        const forward = new THREE.Vector3();
+        const right = new THREE.Vector3();
+        const up = new THREE.Vector3(0, 1, 0); // Assuming Y-up coordinate system
+
+        this.camera.getWorldDirection(forward);
+        right.crossVectors(up, forward).normalize();
+
         if (this.kbm.isKeyDown('KeyW')) {
-            this.camera.position.z -= this.movementSpeed * deltaTime;
+            this.camera.position.add(forward.multiplyScalar(this.movementSpeed * deltaTime));
         }
         if (this.kbm.isKeyDown('KeyS')) {
-            this.camera.position.z += this.movementSpeed * deltaTime;
+            this.camera.position.add(forward.multiplyScalar(-this.movementSpeed * deltaTime));
         }
         if (this.kbm.isKeyDown('KeyA')) {
-            this.camera.position.x -= this.movementSpeed * deltaTime;
+            this.camera.position.add(right.multiplyScalar(this.movementSpeed * deltaTime)); // Reversed direction
         }
         if (this.kbm.isKeyDown('KeyD')) {
-            this.camera.position.x += this.movementSpeed * deltaTime;
+            this.camera.position.add(right.multiplyScalar(-this.movementSpeed * deltaTime)); // Reversed direction
         }
         if (this.kbm.isKeyDown('Space')) {
             this.camera.position.y += this.movementSpeed * deltaTime;

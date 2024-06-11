@@ -7,7 +7,7 @@ export default class CoordinatesManager {
     updateCoordinates() {
         if (this.coordinatesElement) {
             const x = this.camera.position.x.toFixed(2);
-            const y = this.camera.position.y.toFixed(2);
+            const y = this.camera.position.y.toFixed(2); // Y-up system
             const z = this.camera.position.z.toFixed(2);
             this.coordinatesElement.innerHTML = `Coordinates: X=${x}, Y=${y}, Z=${z}`;
         } else {

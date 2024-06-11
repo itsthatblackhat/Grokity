@@ -1,32 +1,28 @@
 import * as THREE from 'three';
-import Grid from './Grid.js';
+import AssetManager from '/GrokityAssetMan/AssetManager.js';
+import { createDogenitesFromImage } from '/Core/Dogenite/DogeniteAlgo.js';
 
 class World {
     constructor(scene) {
         this.scene = scene;
-        this.cube = null;
-        this.grid = new Grid(10, 10);  // Adjust size and divisions as needed
+        this.dogenites = null;
     }
 
-    init() {
-        const geometry = new THREE.BoxGeometry();
-        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-        this.cube = new THREE.Mesh(geometry, material);
-        this.scene.add(this.cube);
+    async init() {
+        try {
+            await AssetManager.preloadAssets(['assets/Dogecoin.png']);
+            const dogecoinTexture = AssetManager.getTexture('assets/Dogecoin.png');
 
-        const gridHelper = this.grid.init();
-        this.scene.add(gridHelper);
+            this.dogenites = createDogenitesFromImage(dogecoinTexture);
 
-        // Initialize other world objects here
-    }
-
-    update() {
-        if (this.cube) {
-            this.cube.rotation.x += 0.01;
-            this.cube.rotation.y += 0.01;
+            this.dogenites.forEach(dogenite => this.scene.add(dogenite.mesh));
+        } catch (error) {
+            console.error('Error loading texture:', error);
         }
+    }
 
-        // Update other world objects here
+    update(deltaTime) {
+        // Update logic if necessary
     }
 }
 

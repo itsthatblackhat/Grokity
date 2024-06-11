@@ -7,13 +7,17 @@ function CreateQuarterPixelShape(size) {
         return null;
     }
 
-    // Create a geometry that's a square (2 triangles forming a square)
+    // Create a geometry that's a quarter pixel (cut diagonally, then one of those halves cut horizontally)
     const validSize = Math.max(size, 1); // Ensure size is at least 1 to avoid zero dimensions
     const geometry = new THREE.BufferGeometry();
     const vertices = new Float32Array([
-        -validSize / 2, -validSize / 2,  0, // Vertex 1
-        validSize / 2, -validSize / 2,  0, // Vertex 2
-        0,         0,         0  // Vertex 3
+        0, 0, 0, // Vertex 1 (origin)
+        validSize / 2, 0, 0, // Vertex 2 (half pixel width)
+        0, validSize / 2, 0, // Vertex 3 (half pixel height)
+
+        0, validSize / 2, 0, // Vertex 3 (reuse for next triangle)
+        validSize / 2, 0, 0, // Vertex 2 (reuse for next triangle)
+        validSize / 4, validSize / 4, 0  // Vertex 4 (quarter pixel)
     ]);
 
     // Update the geometry to use the vertices
