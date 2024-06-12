@@ -29,10 +29,10 @@ The project is structured into various directories, each handling a specific par
 To get started with the Grokity Game Engine, follow these steps:
 
 1. Clone the repository:
-    ```sh
+    sh
     git clone https://github.com/your-username/grokity-game-engine.git
     cd grokity-game-engine
-    ```
+    
 
 2. Install dependencies:
     ```sh
