@@ -5,10 +5,10 @@ class Controls {
     constructor(camera, renderer, kbm) {
         this.camera = camera;
         this.renderer = renderer;
-        this.movementSpeed = 0.5; // Increased movement speed
+        this.movementSpeed = 0.5;
         this.rotationSpeed = 0.01;
         this.controls = null;
-        this.kbm = kbm; // Use the InputKBM instance passed from InputManager
+        this.kbm = kbm;
     }
 
     init() {
@@ -18,7 +18,8 @@ class Controls {
         this.controls.dampingFactor = 0.25;
         this.controls.screenSpacePanning = false;
         this.controls.maxPolarAngle = Math.PI / 2;
-        this.kbm.init(); // Initialize KBM
+        this.controls.rotateSpeed = 1.0; // Ensure this is set for correct direction
+        this.kbm.init();
     }
 
     update(deltaTime) {
@@ -43,10 +44,10 @@ class Controls {
             this.camera.position.add(forward.multiplyScalar(-this.movementSpeed * deltaTime));
         }
         if (this.kbm.isKeyDown('KeyA')) {
-            this.camera.position.add(right.multiplyScalar(this.movementSpeed * deltaTime)); // Reversed direction
+            this.camera.position.add(right.multiplyScalar(-this.movementSpeed * deltaTime)); // Correct direction
         }
         if (this.kbm.isKeyDown('KeyD')) {
-            this.camera.position.add(right.multiplyScalar(-this.movementSpeed * deltaTime)); // Reversed direction
+            this.camera.position.add(right.multiplyScalar(this.movementSpeed * deltaTime)); // Correct direction
         }
         if (this.kbm.isKeyDown('Space')) {
             this.camera.position.y += this.movementSpeed * deltaTime;
