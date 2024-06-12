@@ -29,25 +29,18 @@ The project is structured into various directories, each handling a specific par
 To get started with the Grokity Game Engine, follow these steps:
 
 1. Clone the repository:
-    sh
     git clone https://github.com/your-username/grokity-game-engine.git
     cd grokity-game-engine
     
 
 2. Install dependencies:
-    ```sh
     npm install
-    ```
 
 3. Build the project:
-    ```sh
     npm run build
-    ```
 
 4. Start the development server:
-    ```sh
     npm start
-    ```
 
 5. Open your browser and navigate to `http://localhost:8080`.
 
@@ -72,7 +65,6 @@ Here's an example of how to create and render Dogenites from an image:
 
 #### `DogeniteAlgo.js`
 
-```javascript
 import * as THREE from 'three';
 
 export function createDogenitesFromImage(texture) {
