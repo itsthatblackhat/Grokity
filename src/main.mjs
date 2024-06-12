@@ -1,45 +1,58 @@
-// src/main.mjs
 import * as THREE from 'three';
+import { AssetManager } from '/GrokityAssetMan/AssetManager.js';
 import World from '/Examples/BasicGame/World.js';
-import InputKBM from '/Core/Input/InputKBM.js';
 import Controls from '/Examples/BasicGame/Controls.js';
+import InputKBM from '/Core/Input/InputKBM.js';
 
-let scene, camera, renderer, world, controls, inputKBM;
+let camera, scene, renderer, controls;
+let clock = new THREE.Clock();
 
-function init() {
+async function init() {
+    // Scene
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
 
+    // Camera
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 0, 5);
+
+    // Renderer
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    inputKBM = new InputKBM();
-    controls = new Controls(camera, renderer, inputKBM);
+    // KBM Input
+    const kbm = new InputKBM();
+
+    // Controls
+    controls = new Controls(camera, renderer, kbm);
     controls.init();
 
-    world = new World(scene);
-    world.init();
+    // World
+    const world = new World(scene);
+    await world.init();
 
-    window.addEventListener('resize', onWindowResize, false);
-}
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    // Animation Loop
+    animate();
 }
 
 function animate() {
     requestAnimationFrame(animate);
 
-    const deltaTime = 0.01;
-    world.update(deltaTime);
+    let deltaTime = clock.getDelta();
+
+    // Update controls
     controls.update(deltaTime);
 
+    // Render the scene
     renderer.render(scene, camera);
+
+    // Update coordinates display
+    updateCoordinatesDisplay();
 }
 
-init();
-animate();
+function updateCoordinatesDisplay() {
+    const coordinatesDiv = document.getElementById('coordinates');
+    coordinatesDiv.textContent = `Coordinates: (${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)})`;
+}
+
+window.onload = init;
