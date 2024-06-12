@@ -1,4 +1,3 @@
-// Examples/BasicGame/World.js
 import * as THREE from 'three';
 import { createDogenitesFromImage } from '/Core/Dogenite/DogeniteAlgo.js';
 import AssetManager from '/GrokityAssetMan/AssetManager.js';
@@ -11,15 +10,22 @@ class World {
 
     async init() {
         try {
+            console.log('Preloading assets...');
             await AssetManager.preloadAssets(['assets/Dogecoin.png']);
             const dogecoinTexture = AssetManager.getTexture('assets/Dogecoin.png');
 
+            if (!dogecoinTexture) {
+                throw new Error('Texture not loaded');
+            }
+
+            console.log('Creating Dogenites...');
             this.dogenites = createDogenitesFromImage(dogecoinTexture);
             this.dogenites.position.set(0, 0, -50); // Position in front of the camera
 
+            console.log('Adding Dogenites to the scene...');
             this.scene.add(this.dogenites);
         } catch (error) {
-            console.error('Error loading texture:', error);
+            console.error('Error initializing World:', error);
         }
     }
 

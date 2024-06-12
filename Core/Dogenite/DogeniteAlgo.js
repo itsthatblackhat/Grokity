@@ -1,4 +1,3 @@
-// Core/Dogenite/DogeniteAlgo.js
 import * as THREE from 'three';
 
 export function createDogenitesFromImage(texture) {
@@ -19,21 +18,30 @@ export function createDogenitesFromImage(texture) {
     ]);
     dogeniteGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
 
-    const dogeniteMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
-
     const count = width * height;
-    const mesh = new THREE.InstancedMesh(dogeniteGeometry, dogeniteMaterial, count);
+    const mesh = new THREE.InstancedMesh(dogeniteGeometry, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }), count);
 
     let index = 0;
 
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
-            const alpha = imageData.data[(y * width + x) * 4 + 3];
+            const pixelIndex = (y * width + x) * 4;
+            const alpha = imageData.data[pixelIndex + 3];
 
             if (alpha > 0) {
+                const color = new THREE.Color(
+                    imageData.data[pixelIndex] / 255,
+                    imageData.data[pixelIndex + 1] / 255,
+                    imageData.data[pixelIndex + 2] / 255
+                );
+
+                const material = new THREE.MeshBasicMaterial({ color: color, side: THREE.DoubleSide });
+                mesh.setColorAt(index, color);
+
                 const matrix = new THREE.Matrix4();
                 matrix.setPosition(x - width / 2, y - height / 2, 0);
                 mesh.setMatrixAt(index, matrix);
+
                 index++;
             }
         }

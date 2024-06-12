@@ -1,4 +1,3 @@
-// GrokityAssetMan/AssetManager.js
 import * as THREE from 'three';
 
 class AssetManager {

@@ -1,3 +1,4 @@
+// Examples/BasicGame/Controls.js
 import { OrbitControls } from '/Core/Input/OrbitControls.js';
 import * as THREE from 'three';
 
@@ -8,7 +9,7 @@ class Controls {
         this.movementSpeed = 0.5;
         this.rotationSpeed = 0.01;
         this.controls = null;
-        this.kbm = kbm;
+        this.kbm = kbm; // Use the InputKBM instance passed from InputManager
     }
 
     init() {
@@ -18,8 +19,7 @@ class Controls {
         this.controls.dampingFactor = 0.25;
         this.controls.screenSpacePanning = false;
         this.controls.maxPolarAngle = Math.PI / 2;
-        this.controls.rotateSpeed = 1.0; // Ensure this is set for correct direction
-        this.kbm.init();
+        this.kbm.init(); // Initialize KBM
     }
 
     update(deltaTime) {
@@ -44,10 +44,10 @@ class Controls {
             this.camera.position.add(forward.multiplyScalar(-this.movementSpeed * deltaTime));
         }
         if (this.kbm.isKeyDown('KeyA')) {
-            this.camera.position.add(right.multiplyScalar(-this.movementSpeed * deltaTime)); // Correct direction
+            this.camera.position.add(right.multiplyScalar(this.movementSpeed * deltaTime)); // Reversed direction
         }
         if (this.kbm.isKeyDown('KeyD')) {
-            this.camera.position.add(right.multiplyScalar(this.movementSpeed * deltaTime)); // Correct direction
+            this.camera.position.add(right.multiplyScalar(-this.movementSpeed * deltaTime)); // Reversed direction
         }
         if (this.kbm.isKeyDown('Space')) {
             this.camera.position.y += this.movementSpeed * deltaTime;
