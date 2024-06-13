@@ -1,58 +1,29 @@
 import * as THREE from 'three';
-import { AssetManager } from '/GrokityAssetMan/AssetManager.js';
+import { OrbitControls } from '/Core/Input/OrbitControls.js';
 import World from '/Examples/BasicGame/World.js';
-import Controls from '/Examples/BasicGame/Controls.js';
-import InputKBM from '/Core/Input/InputKBM.js';
-
-let camera, scene, renderer, controls;
-let clock = new THREE.Clock();
 
 async function init() {
-    // Scene
-    scene = new THREE.Scene();
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x000000, 0.00025); // Use exponential fog for smoother fade out
 
-    // Camera
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 0, 5);
-
-    // Renderer
-    renderer = new THREE.WebGLRenderer();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000); // Increase far clipping plane
+    const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    // KBM Input
-    const kbm = new InputKBM();
+    const controls = new OrbitControls(camera, renderer.domElement);
+    camera.position.set(0, 100, 300); // Adjust initial camera position
+    controls.update();
 
-    // Controls
-    controls = new Controls(camera, renderer, kbm);
-    controls.init();
-
-    // World
-    const world = new World(scene);
+    const world = new World(scene, camera, renderer);
     await world.init();
 
-    // Animation Loop
+    function animate() {
+        requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+    }
     animate();
 }
 
-function animate() {
-    requestAnimationFrame(animate);
-
-    let deltaTime = clock.getDelta();
-
-    // Update controls
-    controls.update(deltaTime);
-
-    // Render the scene
-    renderer.render(scene, camera);
-
-    // Update coordinates display
-    updateCoordinatesDisplay();
-}
-
-function updateCoordinatesDisplay() {
-    const coordinatesDiv = document.getElementById('coordinates');
-    coordinatesDiv.textContent = `Coordinates: (${camera.position.x.toFixed(2)}, ${camera.position.y.toFixed(2)}, ${camera.position.z.toFixed(2)})`;
-}
-
-window.onload = init;
+init();

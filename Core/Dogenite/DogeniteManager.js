@@ -11,6 +11,11 @@ class DogeniteManager {
             return;
         }
 
+        if (!(shape instanceof THREE.Shape)) {
+            console.error('Invalid shape provided to createDogenite');
+            return;
+        }
+
         const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
         const geometry = new THREE.ShapeGeometry(shape);
         const mesh = new THREE.Mesh(geometry, material);
