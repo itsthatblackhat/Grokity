@@ -1,7 +1,12 @@
-import * as THREE from 'three';
+// Core/World.js
+
 import { createDogenitesFromImage } from '/Core/Dogenite/DogeniteAlgo.js';
 import AssetManager from '/GrokityAssetMan/AssetManager.js';
 import Landscaping from '/Core/Landscaping/Landscaping.js';
+import InputManager from '/Core/Input/InputManager.js';
+import AnimationManager from '/Core/Animation/AnimationManager.js';
+import BounceAnimation from '/Core/Animation/BounceAnimation.js';
+import SpinAnimation from '/Core/Animation/SpinAnimation.js';
 
 class World {
     constructor(scene, camera, renderer) {
@@ -10,6 +15,8 @@ class World {
         this.renderer = renderer;
         this.dogenites = null;
         this.landscaping = null;
+        this.inputManager = new InputManager(camera, renderer);
+        this.animationManager = new AnimationManager();
     }
 
     async init() {
@@ -26,7 +33,6 @@ class World {
             console.log('Creating Dogenites...');
             this.dogenites = createDogenitesFromImage(dogecoinTexture);
             this.dogenites.position.set(0, 269, 0); // Adjust position to be slightly above the landscape
-            this.dogenites.rotation.y = Math.PI; // Rotate by 180 degrees around the Y-axis
             this.scene.add(this.dogenites);
             console.log('Dogenites added to the scene.');
 
@@ -34,13 +40,27 @@ class World {
             this.landscaping = new Landscaping(this.scene, 'assets/GameTerrain.png');
             await this.landscaping.init();
             console.log('Landscape added to the scene.');
+
+            this.inputManager.init();
+
+            // Add and start the bounce animation
+            const bounceAnimation = new BounceAnimation(this.dogenites, 2, 10);
+            this.animationManager.add(bounceAnimation);
+            bounceAnimation.start();
+
+            // Add and start the spin animation
+            const spinAnimation = new SpinAnimation(this.dogenites, 5); // Duration 5 seconds
+            this.animationManager.add(spinAnimation);
+            spinAnimation.start();
+
         } catch (error) {
             console.error('Error initializing World:', error);
         }
     }
 
     update(deltaTime) {
-        // Update logic if necessary
+        this.inputManager.update(deltaTime);
+        this.animationManager.update(deltaTime);
     }
 }
 
