@@ -1,5 +1,3 @@
-// Core/World.js
-
 import { createDogenitesFromImage } from '/Core/Dogenite/DogeniteAlgo.js';
 import AssetManager from '/GrokityAssetMan/AssetManager.js';
 import Landscaping from '/Core/Landscaping/Landscaping.js';
@@ -30,16 +28,20 @@ class World {
                 throw new Error('Texture not loaded');
             }
 
-            console.log('Creating Dogenites...');
-            this.dogenites = createDogenitesFromImage(dogecoinTexture);
-            this.dogenites.position.set(0, 269, 0); // Adjust position to be slightly above the landscape
-            this.scene.add(this.dogenites);
-            console.log('Dogenites added to the scene.');
-
             console.log('Creating landscape...');
             this.landscaping = new Landscaping(this.scene, 'assets/GameTerrain.png');
             await this.landscaping.init();
             console.log('Landscape added to the scene.');
+
+            console.log('Creating Dogenites...');
+            this.dogenites = createDogenitesFromImage(dogecoinTexture);
+            if (this.dogenites) {
+                this.dogenites.position.set(0, 269, 0); // Adjust position to be slightly above the landscape
+                this.scene.add(this.dogenites);
+                console.log('Dogenites added to the scene.');
+            } else {
+                console.error('Failed to create Dogenites');
+            }
 
             this.inputManager.init();
 
@@ -49,7 +51,7 @@ class World {
             bounceAnimation.start();
 
             // Add and start the spin animation
-            const spinAnimation = new SpinAnimation(this.dogenites, 5); // Duration 5 seconds
+            const spinAnimation = new SpinAnimation(this.dogenites, 5);
             this.animationManager.add(spinAnimation);
             spinAnimation.start();
 

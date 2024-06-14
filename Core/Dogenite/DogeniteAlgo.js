@@ -14,7 +14,52 @@ function estimateDepth(imageData, width, height) {
     return depthMap;
 }
 
-// Function to create Dogenites from an image
+// Function to fill gaps using nearest neighbor approach
+function fillGaps(vertices, colors, width, height) {
+    const filledVertices = [...vertices];
+    const filledColors = [...colors];
+
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+            const index = y * width + x;
+            if (!vertices[index * 3 + 2]) {  // if depth is 0, it's a gap
+                let nearestColor = [0, 0, 0];
+                let nearestDepth = 0;
+
+                for (let dy = -1; dy <= 1; dy++) {
+                    for (let dx = -1; dx <= 1; dx++) {
+                        const nx = x + dx;
+                        const ny = y + dy;
+                        if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                            const nIndex = ny * width + nx;
+                            const nDepth = vertices[nIndex * 3 + 2];
+                            if (nDepth) {
+                                nearestDepth = nDepth;
+                                nearestColor = [
+                                    colors[nIndex * 3],
+                                    colors[nIndex * 3 + 1],
+                                    colors[nIndex * 3 + 2],
+                                ];
+                            }
+                        }
+                    }
+                }
+
+                filledVertices[index * 3] = vertices[index * 3];
+                filledVertices[index * 3 + 1] = vertices[index * 3 + 1];
+                filledVertices[index * 3 + 2] = nearestDepth;
+
+                filledColors[index * 3] = nearestColor[0];
+                filledColors[index * 3 + 1] = nearestColor[1];
+                filledColors[index * 3 + 2] = nearestColor[2];
+            }
+        }
+    }
+
+    return { filledVertices, filledColors };
+}
+
+// Function to create Dogenites from an image with a skin
 export function createDogenitesFromImage(texture) {
     const width = texture.image.width;
     const height = texture.image.height;
@@ -27,52 +72,60 @@ export function createDogenitesFromImage(texture) {
 
     const depthMap = estimateDepth(imageData, width, height);
 
-    const dogeniteGeometry = new THREE.BufferGeometry();
-    const vertices = new Float32Array([
-        -0.5, -0.5, 0,
-        0.5, -0.5, 0,
-        0, 0.5, 0
-    ]);
-    dogeniteGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-
-    const count = width * height;
-    const mesh = new THREE.InstancedMesh(dogeniteGeometry, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }), count);
-
-    const color = new THREE.Color();
-    const transform = new THREE.Object3D();
-    let index = 0;
+    const vertices = [];
+    const colors = [];
+    const indices = [];
 
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
+            const depth = depthMap[y * width + x];
+            const index = y * width + x;
+
             const pixelIndex = (y * width + x) * 4;
-            const alpha = imageData.data[pixelIndex + 3];
+            const alpha = imageData.data[pixelIndex + 3] / 255;
 
-            if (alpha > 0) {
-                const red = imageData.data[pixelIndex] / 255;
-                const green = imageData.data[pixelIndex + 1] / 255;
-                const blue = imageData.data[pixelIndex + 2] / 255;
-                color.setRGB(red, green, blue);
+            // Skip transparent pixels
+            if (alpha < 0.1) {
+                vertices.push(x - width / 2, y - height / 2, 0);
+                colors.push(0, 0, 0);
+                continue;
+            }
 
-                const depth = depthMap[y * width + x];
+            vertices.push(x - width / 2, y - height / 2, depth * 50);
 
-                transform.position.set(x - width / 2, y - height / 2, depth * 50); // Scale depth appropriately
-                transform.updateMatrix();
+            const red = imageData.data[pixelIndex] / 255;
+            const green = imageData.data[pixelIndex + 1] / 255;
+            const blue = imageData.data[pixelIndex + 2] / 255;
+            colors.push(red, green, blue);
 
-                mesh.setMatrixAt(index, transform.matrix);
-                mesh.setColorAt(index, color);
-                index++;
+            if (x < width - 1 && y < height - 1) {
+                const topLeft = index;
+                const topRight = index + 1;
+                const bottomLeft = index + width;
+                const bottomRight = index + width + 1;
+
+                // Create two triangles for the quad
+                indices.push(topLeft, bottomLeft, bottomRight);
+                indices.push(topLeft, bottomRight, topRight);
             }
         }
     }
 
-    mesh.instanceMatrix.needsUpdate = true;
-    mesh.instanceColor.needsUpdate = true;
-    mesh.count = index;
+    const { filledVertices, filledColors } = fillGaps(vertices, colors, width, height);
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(filledVertices, 3));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(filledColors, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
+
+    const material = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide });
+    const mesh = new THREE.Mesh(geometry, material);
 
     return mesh;
 }
 
-// Function to create Dogenites for landscape from an image
+// Function to create Dogenites for landscape from an image with a skin
 export function createDogenitesForLandscapeFromImage(texture) {
     const width = texture.image.width;
     const height = texture.image.height;
@@ -85,49 +138,55 @@ export function createDogenitesForLandscapeFromImage(texture) {
 
     const depthMap = estimateDepth(imageData, width, height);
 
-    const dogeniteGeometry = new THREE.BufferGeometry();
-    const vertices = new Float32Array([
-        -0.5, -0.5, 0,
-        0.5, -0.5, 0,
-        0, 0.5, 0
-    ]);
-    dogeniteGeometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-
-    const count = width * height;
-    const mesh = new THREE.InstancedMesh(dogeniteGeometry, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, vertexColors: true }), count);
-
-    const colors = new Float32Array(count * 3);
-    const positions = new Float32Array(count * 3);
-
-    let index = 0;
+    const vertices = [];
+    const colors = [];
+    const indices = [];
 
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
             const depth = depthMap[y * width + x];
+            const index = y * width + x;
 
-            positions[index * 3] = x - width / 2;
-            positions[index * 3 + 1] = y - height / 2;
-            positions[index * 3 + 2] = depth * 4.2; // Scale depth appropriately
+            const pixelIndex = (y * width + x) * 4;
+            const alpha = imageData.data[pixelIndex + 3] / 255;
 
-            // Set a light brown color for the landscape
-            colors[index * 3] = 0.8; // R
-            colors[index * 3 + 1] = 0.52; // G
-            colors[index * 3 + 2] = 0.25; // B
+            // Skip transparent pixels
+            if (alpha < 0.1) {
+                vertices.push(x - width / 2, y - height / 2, 0);
+                colors.push(0, 0, 0);
+                continue;
+            }
 
-            index++;
+            vertices.push(x - width / 2, y - height / 2, depth * 4.2);
+
+            const red = imageData.data[pixelIndex] / 255;
+            const green = imageData.data[pixelIndex + 1] / 255;
+            const blue = imageData.data[pixelIndex + 2] / 255;
+            colors.push(red, green, blue);
+
+            if (x < width - 1 && y < height - 1) {
+                const topLeft = index;
+                const topRight = index + 1;
+                const bottomLeft = index + width;
+                const bottomRight = index + width + 1;
+
+                // Create two triangles for the quad
+                indices.push(topLeft, bottomLeft, bottomRight);
+                indices.push(topLeft, bottomRight, topRight);
+            }
         }
     }
 
-    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    const { filledVertices, filledColors } = fillGaps(vertices, colors, width, height);
 
-    const instancePositions = new THREE.InstancedBufferAttribute(positions, 3);
-    const instanceColors = new THREE.InstancedBufferAttribute(colors, 3);
-
-    dogeniteGeometry.setAttribute('instancePosition', instancePositions);
-    dogeniteGeometry.setAttribute('instanceColor', instanceColors);
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(filledVertices, 3));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(filledColors, 3));
+    geometry.setIndex(indices);
+    geometry.computeVertexNormals();
 
     const material = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide });
-    const landscapeMesh = new THREE.InstancedMesh(dogeniteGeometry, material, index);
+    const landscapeMesh = new THREE.Mesh(geometry, material);
 
     return landscapeMesh;
 }
