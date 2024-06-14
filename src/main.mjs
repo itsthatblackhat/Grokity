@@ -35,6 +35,7 @@ function animate() {
     controls.update();
     inputManager.update(0.016); // Assuming 60 FPS, so each frame is ~16ms
     coordinatesManager.updateCoordinates();
+    world.update(0.016); // Assuming 60 FPS, so each frame is ~16ms
     renderer.render(scene, camera);
 }
 
