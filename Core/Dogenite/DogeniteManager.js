@@ -1,26 +1,48 @@
-import * as THREE from 'three';
+import axios from 'axios';
 
-class DogeniteManager {
-    constructor(scene) {
-        this.scene = scene;
+class WeatherManager {
+    constructor(weatherMap) {
+        this.weatherMap = weatherMap;
     }
 
-    createDogenite(shape) {
-        if (!this.scene) {
-            console.error('Scene is not defined');
-            return;
+    async getForecastData(latitude, longitude) {
+        try {
+            const metadataUrl = `https://api.weather.gov/points/${latitude},${longitude}`;
+            console.log(`Fetching metadata from URL: ${metadataUrl}`);
+            const metadataResponse = await axios.get(metadataUrl);
+            const forecastUrl = metadataResponse.data.properties.forecast;
+            console.log(`Fetching forecast data from URL: ${forecastUrl}`);
+            const forecastResponse = await axios.get(forecastUrl);
+            return forecastResponse.data;
+        } catch (error) {
+            console.error('Error fetching forecast data:', error);
+            throw error;
         }
+    }
 
-        if (!(shape instanceof THREE.Shape)) {
-            console.error('Invalid shape provided to createDogenite');
-            return;
+    async getRadarStations() {
+        try {
+            const radarStationsUrl = 'https://api.weather.gov/radar/stations';
+            console.log(`Fetching radar stations from URL: ${radarStationsUrl}`);
+            const radarStationsResponse = await axios.get(radarStationsUrl);
+            return radarStationsResponse.data.features;
+        } catch (error) {
+            console.error('Error fetching radar stations:', error);
+            throw error;
         }
+    }
 
-        const material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide });
-        const geometry = new THREE.ShapeGeometry(shape);
-        const mesh = new THREE.Mesh(geometry, material);
-        this.scene.add(mesh);
+    async getRadarData(stationIdentifier) {
+        try {
+            const radarDataUrl = `https://api.weather.gov/radar/stations/${stationIdentifier}/images/latest`;
+            console.log(`Fetching radar data from URL: ${radarDataUrl}`);
+            const radarDataResponse = await axios.get(radarDataUrl);
+            return radarDataResponse.data.properties.imageUrl;
+        } catch (error) {
+            console.error('Error fetching radar data:', error);
+            throw error;
+        }
     }
 }
 
-export default DogeniteManager;
+export default WeatherManager;

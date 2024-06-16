@@ -64,5 +64,14 @@ module.exports = {
     },
     externals: {
         three: 'THREE'
+    },
+    devServer: {
+        proxy: {
+            '/radar': {
+                target: 'https://radar.weather.gov',
+                changeOrigin: true,
+                pathRewrite: {'^/radar': ''}
+            }
+        }
     }
 };

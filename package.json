@@ -5,20 +5,24 @@
   "main": "src/main.mjs",
   "scripts": {
     "start": "webpack serve --open",
-    "build": "webpack"
+    "build": "webpack",
+    "proxy": "node src/proxyServer.js"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@babel/core": "^7.24.7",
     "assert": "^2.1.0",
+    "axios": "^1.7.2",
     "babel": "^6.23.0",
     "babel-loader": "^9.1.3",
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "cannon": "^0.6.2",
     "cannon-es": "^0.20.0",
+    "cheerio": "^1.0.0-rc.12",
     "crypto-browserify": "^3.12.0",
+    "http-proxy-middleware": "^3.0.0",
     "https-browserify": "^1.0.0",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",

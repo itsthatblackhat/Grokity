@@ -3,8 +3,8 @@ import AssetManager from '/GrokityAssetMan/AssetManager.js';
 import Landscaping from '/Core/Landscaping/Landscaping.js';
 import InputManager from '/Core/Input/InputManager.js';
 import AnimationManager from '/Core/Animation/AnimationManager.js';
-import BounceAnimation from '/Core/Animation/BounceAnimation.js';
-import SpinAnimation from '/Core/Animation/SpinAnimation.js';
+import WeatherRender from '/Core/Extensions/WeatherRender/WeatherRender.js';
+import WeatherAnimation from '/Core/Animation/WeatherAnimation.js';
 
 class World {
     constructor(scene, camera, renderer) {
@@ -15,46 +15,40 @@ class World {
         this.landscaping = null;
         this.inputManager = new InputManager(camera, renderer);
         this.animationManager = new AnimationManager();
+        this.weatherRender = new WeatherRender(scene, 33.1507, -96.8236); // Pass correct coordinates
     }
 
     async init() {
         try {
             console.log('Preloading assets...');
-            await AssetManager.preloadAssets(['assets/Dogecoin.png', 'assets/GameTerrain.png']);
-            const dogecoinTexture = AssetManager.getTexture('assets/Dogecoin.png');
-            const terrainTexture = AssetManager.getTexture('assets/GameTerrain.png');
+            await AssetManager.preloadAssets([
+                'assets/GlobalVector.png'
+            ]);
+            const terrainTexture = AssetManager.getTexture('assets/GlobalVector.png');
 
-            if (!dogecoinTexture || !terrainTexture) {
+            if (!terrainTexture) {
                 throw new Error('Texture not loaded');
             }
 
             console.log('Creating landscape...');
-            this.landscaping = new Landscaping(this.scene, 'assets/GameTerrain.png');
+            this.landscaping = new Landscaping(this.scene, 'assets/GlobalVector.png');
             await this.landscaping.init();
             console.log('Landscape added to the scene.');
 
-            console.log('Creating Dogenites...');
-            this.dogenites = createDogenitesFromImage(dogecoinTexture);
-            if (this.dogenites) {
-                this.dogenites.position.set(0, 269, 0); // Adjust position to be slightly above the landscape
-                this.scene.add(this.dogenites);
-                console.log('Dogenites added to the scene.');
-            } else {
-                console.error('Failed to create Dogenites');
+            this.inputManager.init();
+            await this.weatherRender.initialize(); // Initialize the weather render
+
+            // Create and start weather animation
+            const weatherEffect = this.weatherRender.weatherEffect;
+            if (weatherEffect) {
+                const startPosition = weatherEffect.position.clone();
+                const endPosition = startPosition.clone().add(new THREE.Vector3(0, 50, 0)); // Example of moving upwards
+                const weatherAnimation = new WeatherAnimation(weatherEffect, 5000, startPosition, endPosition); // 5 seconds duration
+                this.animationManager.add(weatherAnimation);
+                weatherAnimation.start();
             }
 
-            this.inputManager.init();
-
-            // Add and start the bounce animation
-            const bounceAnimation = new BounceAnimation(this.dogenites, 2, 10);
-            this.animationManager.add(bounceAnimation);
-            bounceAnimation.start();
-
-            // Add and start the spin animation
-            const spinAnimation = new SpinAnimation(this.dogenites, 5);
-            this.animationManager.add(spinAnimation);
-            spinAnimation.start();
-
+            console.log('World initialized.');
         } catch (error) {
             console.error('Error initializing World:', error);
         }
@@ -63,6 +57,7 @@ class World {
     update(deltaTime) {
         this.inputManager.update(deltaTime);
         this.animationManager.update(deltaTime);
+        this.weatherRender.update(); // Update weather effects
     }
 }
 
